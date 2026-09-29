@@ -36,9 +36,12 @@ function loadPdf(url: string): Promise<PDFDocumentProxy> {
 export async function countPdfPages(file: File): Promise<number> {
   const m = await pdfjs();
   const data = new Uint8Array(await file.arrayBuffer());
-  const doc = await m.getDocument({ data }).promise;
+  const task = m.getDocument({ data });
+  const doc = await task.promise;
   const n = doc.numPages;
-  await doc.destroy();
+  try {
+    (task as unknown as { destroy?: () => Promise<void> }).destroy?.()?.catch(() => {});
+  } catch {}
   return n;
 }
 
