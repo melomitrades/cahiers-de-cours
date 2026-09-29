@@ -75,7 +75,7 @@ async function renderToCanvas(ref: DocRef, width: number): Promise<HTMLCanvasEle
   // `canvas` est le paramètre des versions récentes, `canvasContext` celui des anciennes.
   await page.render({ canvas, canvasContext: ctx, viewport } as Parameters<typeof page.render>[0])
     .promise;
-  page.cleanup();
+    (page as unknown as { cleanup?: () => void }).cleanup?.();
   return canvas;
 }
 
