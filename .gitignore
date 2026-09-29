@@ -1,0 +1,10 @@
+node_modules
+.next
+out
+.env
+.env.local
+.local-uploads
+public/pdf.worker.min.mjs
+next-env.d.ts
+*.tsbuildinfo
+.vercel
