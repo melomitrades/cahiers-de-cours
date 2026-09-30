@@ -35,6 +35,7 @@ try {
       page_count int not null,
       created_at timestamptz not null default now()
     );
+    alter table documents add column if not exists access text not null default 'public';
 
     create table if not exists pages (
       id serial primary key,

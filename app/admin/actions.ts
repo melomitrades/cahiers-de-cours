@@ -38,6 +38,7 @@ function checkDoc(doc: UploadedDoc): UploadedDoc {
     url: doc.url,
     name: String(doc.name || 'document.pdf').slice(0, 200),
     pageCount: clamp(int(doc.pageCount, 1), 1, 2000),
+    access: doc.access === 'private' ? 'private' : 'public',
   };
 }
 
@@ -266,8 +267,8 @@ export async function placeDocument(input: {
       const [{ total }] = await sql`select count(*)::int as total from pages where notebook_id = ${nb}`;
       const start = clamp(int(input.start, (total as number) + 1), 1, (total as number) + 1);
       const [{ id: docId }] = await sql`
-        insert into documents (url, name, page_count)
-        values (${doc.url}, ${doc.name}, ${doc.pageCount}) returning id`;
+        insert into documents (url, name, page_count, access)
+        values (${doc.url}, ${doc.name}, ${doc.pageCount}, ${doc.access ?? 'public'}) returning id`;
 
       if (input.mode === 'insert') {
         await sql`
@@ -311,8 +312,8 @@ export async function setPageDocument(
       if (doc) {
         const d = checkDoc(doc);
         const [row] = await sql`
-          insert into documents (url, name, page_count)
-          values (${d.url}, ${d.name}, ${d.pageCount}) returning id`;
+          insert into documents (url, name, page_count, access)
+          values (${d.url}, ${d.name}, ${d.pageCount}, ${d.access ?? 'public'}) returning id`;
         docId = row.id as number;
         page = clamp(int(docPage, 1), 1, d.pageCount);
       }

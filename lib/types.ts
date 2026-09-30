@@ -38,6 +38,11 @@ export type Notebook = {
 };
 
 /** PDF qui vient d'être téléversé (avant enregistrement en base). */
-export type UploadedDoc = { url: string; name: string; pageCount: number };
+export type UploadedDoc = {
+  url: string;
+  name: string;
+  pageCount: number;
+  access?: 'public' | 'private';
+};
 
 export const PAGE_RATIO = 297 / 210; // A4 portrait : hauteur / largeur

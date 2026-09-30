@@ -35,7 +35,9 @@ Technique : Next.js (App Router), base de données Postgres **Neon**, fichiers P
 ### 4. Ajouter le stockage des PDF (Vercel Blob)
 
 1. Toujours dans **Storage → Create Database**, choisis **Blob**.
-2. Relie-le au projet. Vercel ajoute tout seul la variable `BLOB_READ_WRITE_TOKEN`.
+2. Relie-le au projet. Vercel s'occupe tout seul de la connexion : selon la version, il ajoute `BLOB_STORE_ID` ou `BLOB_READ_WRITE_TOKEN`, et il n'y a rien à copier.
+
+> Les PDF de plus de 4 Mo ne peuvent être envoyés que si la variable `BLOB_READ_WRITE_TOKEN` existe. Sinon, compresse-les (ilovepdf.com → Compresser) ou découpe-les en plusieurs fichiers.
 
 ### 5. Choisir ton mot de passe
 
@@ -85,7 +87,7 @@ npm run db:migrate
 npm run dev                  # http://localhost:3000
 ```
 
-Sans `BLOB_READ_WRITE_TOKEN`, les PDF sont enregistrés dans le dossier `.local-uploads/`. Cela ne fonctionne qu'en local.
+Sans Vercel Blob configuré, les PDF sont enregistrés dans le dossier `.local-uploads/`. Cela ne fonctionne qu'en local.
 
 ## Organisation du code
 
@@ -107,4 +109,3 @@ lib/
   data.ts / db.ts                Accès à la base Neon
 scripts/migrate.mjs              Création des tables (lancé à chaque build)
 ```
-"# cahiers-de-cours" 

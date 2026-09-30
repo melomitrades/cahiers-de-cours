@@ -17,7 +17,6 @@ export async function POST(request: Request) {
           addRandomSuffix: true,
         };
       },
-      onUploadCompleted: async () => {},
     });
     return NextResponse.json(json);
   } catch (e) {

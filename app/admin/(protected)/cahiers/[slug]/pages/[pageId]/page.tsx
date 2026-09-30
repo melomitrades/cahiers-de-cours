@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import PageEditor from '@/components/admin/PageEditor';
 import { getNotebookBySlug, getPages } from '@/lib/data';
-import { usesBlob } from '@/lib/storage';
+import { canUploadLargeFiles } from '@/lib/storage';
 
 export default async function PageAdmin({
   params,
@@ -30,7 +30,7 @@ export default async function PageAdmin({
         total={pages.length}
         prevId={pages[index - 1]?.id ?? null}
         nextId={pages[index + 1]?.id ?? null}
-        useBlob={usesBlob()}
+        useBlob={canUploadLargeFiles()}
       />
     </>
   );

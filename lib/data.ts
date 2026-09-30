@@ -47,6 +47,11 @@ type ZoneRow = {
   hinge: Hinge;
 };
 
+/** Les PDF stockés sur Vercel Blob passent par /api/doc/<id> (compatible stockage privé). */
+function docUrl(id: number, url: string) {
+  return url.startsWith('https://') ? `/api/doc/${id}` : url;
+}
+
 /** Toutes les pages d'un cahier, dans l'ordre, avec leurs zones. */
 export async function getPages(notebookId: number): Promise<AdminPage[]> {
   const sql = db();
@@ -78,8 +83,8 @@ export async function getPages(notebookId: number): Promise<AdminPage[]> {
     return {
       id: r.id,
       number: i + 1,
-      course: r.courseUrl ? { url: r.courseUrl, page: r.courseDocPage ?? 1 } : null,
-      pieces: r.piecesUrl ? { url: r.piecesUrl, page: r.piecesDocPage ?? 1 } : null,
+      course: r.courseUrl ? { url: docUrl(r.courseDocId!, r.courseUrl), page: r.courseDocPage ?? 1 } : null,
+      pieces: r.piecesUrl ? { url: docUrl(r.piecesDocId!, r.piecesUrl), page: r.piecesDocPage ?? 1 } : null,
       courseDoc: r.courseDocId
         ? { id: r.courseDocId, name: r.courseName ?? '', pageCount: r.coursePageCount ?? 1 }
         : null,
