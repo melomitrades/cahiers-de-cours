@@ -1,6 +1,9 @@
 'use client';
 
 import type { PDFDocumentProxy } from 'pdfjs-dist';
+
+// On utilise la version « legacy » de pdf.js : elle fonctionne aussi sur les navigateurs
+// qui ne sont pas les tout derniers (tablettes, Chromebooks, anciens Safari…).
 import type { DocRef, Rect } from './types';
 
 /** Largeur (en pixels) utilisée pour dessiner une page : nette même sur écran Retina. */
@@ -12,7 +15,7 @@ let pdfjsPromise: Promise<PdfJs> | null = null;
 
 function pdfjs(): Promise<PdfJs> {
   if (!pdfjsPromise) {
-    pdfjsPromise = import('pdfjs-dist').then((m) => {
+    pdfjsPromise = (import('pdfjs-dist/legacy/build/pdf.mjs') as Promise<PdfJs>).then((m) => {
       m.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
       return m;
     });
@@ -36,9 +39,13 @@ function loadPdf(url: string): Promise<PDFDocumentProxy> {
 export async function countPdfPages(file: File): Promise<number> {
   const m = await pdfjs();
   const data = new Uint8Array(await file.arrayBuffer());
-  const doc = await m.getDocument({ data }).promise;
+  const task = m.getDocument({ data });
+  const doc = await task.promise;
   const n = doc.numPages;
-  await doc.destroy();
+  // Libère la mémoire (sans bloquer si la méthode n'existe pas selon la version de pdf.js).
+  try {
+    (task as unknown as { destroy?: () => Promise<void> }).destroy?.()?.catch(() => {});
+  } catch {}
   return n;
 }
 
@@ -72,7 +79,7 @@ async function renderToCanvas(ref: DocRef, width: number): Promise<HTMLCanvasEle
   // `canvas` est le paramètre des versions récentes, `canvasContext` celui des anciennes.
   await page.render({ canvas, canvasContext: ctx, viewport } as Parameters<typeof page.render>[0])
     .promise;
-  page.cleanup();
+  (page as unknown as { cleanup?: () => void }).cleanup?.();
   return canvas;
 }
 

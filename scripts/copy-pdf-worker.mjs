@@ -6,7 +6,7 @@ import { dirname, join } from 'node:path';
 const require = createRequire(import.meta.url);
 try {
   const pkgDir = dirname(require.resolve('pdfjs-dist/package.json'));
-  const candidates = ['build/pdf.worker.min.mjs', 'build/pdf.worker.mjs'];
+  const candidates = ['legacy/build/pdf.worker.min.mjs', 'legacy/build/pdf.worker.mjs'];
   const src = candidates.map((c) => join(pkgDir, c)).find((p) => existsSync(p));
   if (!src) throw new Error('worker pdf.js introuvable');
   mkdirSync('public', { recursive: true });
